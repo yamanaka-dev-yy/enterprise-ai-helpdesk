@@ -2,7 +2,7 @@
 
 このファイルは `python3 scripts/sync_docs.py` で自動生成します．手動で編集しないでください．
 
-ソース指紋: `162e7a4cd20ec530`
+ソース指紋: `57bdbfd9deb3688b`
 
 ## API一覧
 
