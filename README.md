@@ -20,7 +20,11 @@
 
 ソースコード: [yamanaka-dev-yy/enterprise-ai-helpdesk](https://github.com/yamanaka-dev-yy/enterprise-ai-helpdesk)
 
-**Webアプリはまだ外部公開していません．** ローカルで動作確認済みです．Renderへのデプロイと実AI接続はこれから行います．GitHub Actionsの実行状況はリポジトリのActionsタブで確認できます．
+公開デモ: [Enterprise AI Helpdesk](https://enterprise-ai-helpdesk.onrender.com)
+
+2026-11-06，公開HTTPS環境で社員・管理者のデモログイン，資料検索・出典の展開，回答保留，問い合わせ登録，ログアウトを確認しました．**実AIは未接続のため，現在の回答は資料本文の抜粋です．** 通常アカウントは未発行なので，ログイン画面のデモ体験ボタンを使用してください．
+
+無料インスタンスが休止中の場合，初回のアクセスで起動待ちになることがあります．再起動などで追加データやログイン状態が失われる構成です．GitHub Actionsの実行状況はリポジトリのActionsタブで確認できます．
 
 ## 起動
 
