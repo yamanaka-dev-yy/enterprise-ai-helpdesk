@@ -1,10 +1,10 @@
 # 検証結果
 
-確認日: 2026-11-05。実在企業のデータや利用実績ではなく、このポートフォリオの架空資料による検証。
+確認日: 2026-11-05．実在企業のデータや利用実績ではなく，このポートフォリオの架空資料による検証．
 
 ## 自動テスト
 
-37件をローカルで確認。認証、ログイン保持Cookie、パスワード空白の保持、セッション失効、CSRF、Origin、入力サイズ、レート制限、文書ACL、デモ隔離、通常管理者の文書CRUD、問い合わせ、モデル障害、出典ID不正、利用上限の同時更新などを対象とする。
+37件をローカルで確認．認証，ログイン保持Cookie，パスワード空白の保持，セッション失効，CSRF，Origin，入力サイズ，レート制限，文書ACL，デモ隔離，通常管理者の文書CRUD，問い合わせ，モデル障害，出典ID不正，利用上限の同時更新などを対象とする．
 
 ```sh
 .venv/bin/python -m pytest backend/tests -q
@@ -14,27 +14,27 @@ npm run typecheck
 npm run build
 ```
 
-ローカルで全件成功。モデル出力・Embedding出力を使うテストはモックであり、実際のプロバイダーの動作確認ではない。依存ライブラリStarletteからTestClientのhttpx使用に関する非推奨警告が1件出る（将来httpx2への移行が必要）。
+ローカルで全件成功．モデル出力・Embedding出力を使うテストはモックであり，実際のプロバイダーの動作確認ではない．依存ライブラリStarletteからTestClientのhttpx使用に関する非推奨警告が1件出る（将来httpx2への移行が必要）．
 
 ## GitHub Actions
 
-2026-11-06、コミット `194410bb6d74b98c9510d4ede665dd1d7fca488a` で[CI実行結果](https://github.com/yamanaka-dev-yy/enterprise-ai-helpdesk/actions/runs/42182490920)の全3ジョブ成功を確認。
+2026-11-06，コミット `194410bb6d74b98c9510d4ede665dd1d7fca488a` で[CI実行結果](https://github.com/yamanaka-dev-yy/enterprise-ai-helpdesk/actions/runs/42182490920)の全3ジョブ成功を確認．
 
 - backend: Ruffと自動テスト37件
 - frontend: TypeScript型チェックとNext.jsビルド
 - container: Dockerビルドと起動後のヘルスチェック
 
-クラウド上のCI成功であり、アプリのインターネット公開や実AI接続を確認したものではない。
+クラウド上のCI成功であり，アプリのインターネット公開や実AI接続を確認したものではない．
 
 ## 検索・回答保留の評価
 
-[入力15件](evaluation-cases.json)、[測定結果](evaluation-results.json)。
+[入力15件](evaluation-cases.json)，[測定結果](evaluation-results.json)．
 
 ```sh
 PYTHONPATH=backend .venv/bin/python -m helpdesk.evaluate
 ```
 
-結果: **13 / 15件で、期待した回答/保留と参照文書が一致**。ローカルAPI応答の中央値15.94ms。外部AI呼び出し0回。中央値はその実行環境・小規模資料・本文抜粋モードのみの数値で、生成AIやクラウドの速度を示さない。
+結果: **13 / 15件で，期待した回答/保留と参照文書が一致**．ローカルAPI応答の中央値15.94ms．外部AI呼び出し0回．中央値はその実行環境・小規模資料・本文抜粋モードのみの数値で，生成AIやクラウドの速度を示さない．
 
 失敗した質問:
 
@@ -43,7 +43,7 @@ PYTHONPATH=backend .venv/bin/python -m helpdesk.evaluate
 | リモートワーク中に社内システムへ入れません | VPNガイドを候補に挙げる | 回答保留 |
 | 認証用の携帯を替える予定です | 認証端末変更の手順 | 回答保留 |
 
-どちらも表現の違いを文字bigram検索で拾えない例。追加の言い換え辞書だけで数字を整えるより、全文意味検索・検索拡張の比較を次段階の課題として残す。根拠不足時に保留できることと、必要な根拠を見つけることは別々に評価する。
+どちらも表現の違いを文字bigram検索で拾えない例．追加の言い換え辞書だけで数字を整えるより，全文意味検索・検索拡張の比較を次段階の課題として残す．根拠不足時に保留できることと，必要な根拠を見つけることは別々に評価する．
 
 ## ブラウザー
 
@@ -55,8 +55,8 @@ PYTHONPATH=backend .venv/bin/python -m helpdesk.evaluate
 
 ## Docker
 
-Python 3.11 / Node.js 22のマルチステージビルドを確認。コンテナー内でヘルスチェック、社員デモログイン、VPNの検索・回答、画面配信の200応答を確認。
+Python 3.11 / Node.js 22のマルチステージビルドを確認．コンテナー内でヘルスチェック，社員デモログイン，VPNの検索・回答，画面配信の200応答を確認．
 
 ## 未検証
 
-実Gemini / LiteLLM Proxyの起動と生成品質、実Embedding、公開HTTPSでのCookie、Render稼働、クラウド応答時間、質問あたりの実AI費用、手動検索との時間比較。これらをローカルやCIの成功結果から推測しない。
+実Gemini / LiteLLM Proxyの起動と生成品質，実Embedding，公開HTTPSでのCookie，Render稼働，クラウド応答時間，質問あたりの実AI費用，手動検索との時間比較．これらをローカルやCIの成功結果から推測しない．
