@@ -1,4 +1,4 @@
-# ローカル検証結果
+# 検証結果
 
 確認日: 2026-11-05。実在企業のデータや利用実績ではなく、このポートフォリオの架空資料による検証。
 
@@ -15,6 +15,16 @@ npm run build
 ```
 
 ローカルで全件成功。モデル出力・Embedding出力を使うテストはモックであり、実際のプロバイダーの動作確認ではない。依存ライブラリStarletteからTestClientのhttpx使用に関する非推奨警告が1件出る（将来httpx2への移行が必要）。
+
+## GitHub Actions
+
+2026-11-06、コミット `194410bb6d74b98c9510d4ede665dd1d7fca488a` で[CI実行結果](https://github.com/yamanaka-dev-yy/enterprise-ai-helpdesk/actions/runs/42182490920)の全3ジョブ成功を確認。
+
+- backend: Ruffと自動テスト37件
+- frontend: TypeScript型チェックとNext.jsビルド
+- container: Dockerビルドと起動後のヘルスチェック
+
+クラウド上のCI成功であり、アプリのインターネット公開や実AI接続を確認したものではない。
 
 ## 検索・回答保留の評価
 
@@ -49,4 +59,4 @@ Python 3.11 / Node.js 22のマルチステージビルドを確認。コンテ�
 
 ## 未検証
 
-実Gemini / LiteLLM Proxyの起動と生成品質、実Embedding、公開HTTPSでのCookie、Render稼働、GitHub Actions、クラウド応答時間、質問あたりの実AI費用、手動検索との時間比較。これらをローカルの成功結果から推測しない。
+実Gemini / LiteLLM Proxyの起動と生成品質、実Embedding、公開HTTPSでのCookie、Render稼働、クラウド応答時間、質問あたりの実AI費用、手動検索との時間比較。これらをローカルやCIの成功結果から推測しない。
