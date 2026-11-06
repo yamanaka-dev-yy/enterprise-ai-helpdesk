@@ -75,7 +75,7 @@ jobs:
         run: python scripts/sync_docs.py
       - name: Commit generated changes
         run: |
-          git add -- README.md AGENTS.md docs/*.md
+          git add -- '*.md'
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'

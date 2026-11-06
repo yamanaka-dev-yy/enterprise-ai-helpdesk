@@ -67,3 +67,22 @@ def test_readme_does_not_name_application_target_companies():
     readme = (Path(__file__).resolve().parents[2] / 'README.md').read_text()
     assert '日本光電' not in readme
     assert 'Nihon Kohden' not in readme
+
+
+def test_sync_includes_contribution_guide_and_pr_template(tmp_path):
+    for path in sync_docs.source_files(sync_docs.ROOT):
+        dest = tmp_path / path.relative_to(sync_docs.ROOT)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, dest)
+    for relative in ('README.md', 'AGENTS.md', 'docs/specification.md'):
+        dest = tmp_path / relative
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(sync_docs.ROOT / relative, dest)
+    for relative in ('CONTRIBUTING.md', '.github/PULL_REQUEST_TEMPLATE.md'):
+        dest = tmp_path / relative
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text('説明、文書。\n`原文、保持。`\n')
+    assert sync_docs.synchronize(tmp_path)
+    for relative in ('CONTRIBUTING.md', '.github/PULL_REQUEST_TEMPLATE.md'):
+        assert (tmp_path / relative).read_text() == '説明，文書．\n`原文、保持。`\n'
+    assert not sync_docs.synchronize(tmp_path, check=True)

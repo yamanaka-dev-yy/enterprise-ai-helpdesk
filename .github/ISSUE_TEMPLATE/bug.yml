@@ -1,0 +1,35 @@
+name: 不具合報告
+description: 再現方法と期待する動作を記録します．
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 問題と影響
+      description: 何が起きて，どの操作や利用者に影響するかを記載してください．
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: 個人情報・APIキー・パスワードを含めず，操作手順を記載してください．
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: 期待する動作と実際の動作
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 修正の完了条件・検証方法
+      description: 再現しなくなる条件と，確認すべき関連機能を記載してください．
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 発生環境・補足
+      description: ブラウザー，発生時刻，公開環境かローカルかなどを記載してください．
