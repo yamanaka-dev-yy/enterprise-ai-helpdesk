@@ -1,0 +1,19 @@
+# Local-only optional configuration. No cloud resource is created.
+services:
+  app:
+    environment:
+      LLM_BASE_URL: http://litellm:4000/v1
+      LLM_API_KEY: ${LITELLM_MASTER_KEY:?Set LITELLM_MASTER_KEY in .env}
+      LLM_MODEL: helpdesk-model
+    depends_on:
+      - litellm
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY:?Set GEMINI_API_KEY in .env}
+      GEMINI_MODEL: ${GEMINI_MODEL:?Set GEMINI_MODEL to an eligible provider model}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?Set LITELLM_MASTER_KEY in .env}
+    volumes:
+      - ./infra/litellm.yaml:/app/config.yaml:ro
+    # No host port: the gateway is reachable only on the Docker network.

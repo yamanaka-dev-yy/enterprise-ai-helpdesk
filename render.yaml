@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: enterprise-ai-helpdesk
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: ENABLE_DEMO
+        value: "true"
+      - key: AI_DAILY_LIMIT
+        value: "30"
+      - key: SESSION_AI_LIMIT
+        value: "8"
+      - key: DATABASE_PATH
+        value: /app/data/helpdesk.sqlite3
+    # No paid disk, no database service, and no automatic AI credentials.

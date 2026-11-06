@@ -1,0 +1,12 @@
+model_list:
+  - model_name: helpdesk-model
+    litellm_params:
+      # .env value must include the provider prefix, e.g. gemini/<model-id>.
+      model: os.environ/GEMINI_MODEL
+      api_key: os.environ/GEMINI_API_KEY
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  turn_off_message_logging: true
