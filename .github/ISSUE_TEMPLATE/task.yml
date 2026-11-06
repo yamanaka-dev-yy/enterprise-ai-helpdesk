@@ -1,0 +1,32 @@
+name: 開発・改善タスク
+description: 機能追加・改善・ドキュメント整備の目的と完了条件を整理します．
+body:
+  - type: textarea
+    id: purpose
+    attributes:
+      label: 背景と目的
+      description: 何を解決し，変更後にどうなることを期待するかを記載してください．
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 対応範囲
+      description: 対応する内容と，今回扱わない内容を記載してください．
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 完了条件
+      description: 動作や資料で確認できる条件をチェックリストで記載してください．
+      placeholder: '- [ ] 期待する動作を確認できる．'
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: 検証方法・確認事項
+      description: テスト方法，制約，不明点を記載してください．秘密情報を含めないでください．
+    validations:
+      required: true

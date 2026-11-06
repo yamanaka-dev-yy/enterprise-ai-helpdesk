@@ -210,7 +210,8 @@ def planned_changes(root):
         path = root / relative
         link = "docs/reference.md" if relative == "README.md" else "reference.md"
         planned[path] = replace_section(path.read_text(), summary(root, link))
-    markdown = [root / "README.md", root / "AGENTS.md", *(root / "docs").rglob("*.md")]
+    markdown = [*root.glob("*.md"), *(root / "docs").rglob("*.md"),
+                *(root / ".github").rglob("*.md")]
     for path in markdown:
         if path.is_file():
             planned[path] = normalize_prose(planned.get(path, path.read_text()))

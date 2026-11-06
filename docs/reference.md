@@ -2,7 +2,7 @@
 
 このファイルは `python3 scripts/sync_docs.py` で自動生成します．手動で編集しないでください．
 
-ソース指紋: `57bdbfd9deb3688b`
+ソース指紋: `c82d5bdb2f22ef49`
 
 ## API一覧
 
@@ -128,6 +128,7 @@
 | `backend/tests/test_documentation.py` | `test_generation_does_not_read_environment` |
 | `backend/tests/test_documentation.py` | `test_generation_is_deterministic_and_detects_source_changes` |
 | `backend/tests/test_documentation.py` | `test_readme_does_not_name_application_target_companies` |
+| `backend/tests/test_documentation.py` | `test_sync_includes_contribution_guide_and_pr_template` |
 | `backend/tests/test_rag.py` | `test_grounded_extraction_and_sources` |
 | `backend/tests/test_rag.py` | `test_no_evidence_is_withheld` |
 | `backend/tests/test_rag.py` | `test_access_filter_prevents_leaks` |

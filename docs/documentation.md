@@ -15,7 +15,7 @@ python3 scripts/sync_docs.py --check
 
 - READMEと仕様書の自動生成領域: API件数・依存関係・セッション期限・ソース指紋．
 - `docs/reference.md`: API一覧・アクセス制御・CSRF要否・環境変数の宣言上の既定値・依存関係・テスト関数一覧．
-- README・AGENTS・docs配下のMarkdown: 日本語の句読点．
+- リポジトリ直下・docs配下・.github配下のMarkdown: 日本語の句読点．
 
 ASTでPythonの宣言を読み取るため，アプリを起動せず，実際の `.env` やAPIキーを読み取りません．生成領域外の文章は句読点以外を自動で書き換えません．
 
@@ -24,6 +24,8 @@ ASTでPythonの宣言を読み取るため，アプリを起動せず，実際�
 `main` へのpushで `checks / docs-sync` が生成処理を実行します．差分があれば `github-actions[bot]` がドキュメントだけを自動コミットします．このジョブだけに `contents: write` を与え，テストジョブの権限は読み取り専用です．
 
 Pull Requestでは `checks / docs-check` が生成漏れや句読点の不一致を検出します．PRでは自動コミットしないため，ローカルで同期してpushしてください．
+
+通常の変更は [Issue・PR・マージの運用ルール](development.md) に従います．`docs-sync` のbotによる生成領域と句読点の同期だけを，PRを介さないmain直接更新の例外とします．
 
 自動コミットは `[skip ci]` を付け，ドキュメントのためだけのCI再実行を避けます．通常のソース変更時は引き続きテストを実行します．通常のpushだけを使い，force pushは行いません．同時更新によってpushが競合した場合は，次の実行またはローカルでの同期によって解消します．
 
