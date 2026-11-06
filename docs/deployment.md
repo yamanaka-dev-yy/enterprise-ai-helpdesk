@@ -1,6 +1,6 @@
 # 無料枠での公開準備
 
-公開確認日: 2026-11-06．[公開デモ](https://enterprise-ai-helpdesk.onrender.com)をRenderへデプロイし，HTTPS環境でデモログイン・資料検索・出典の展開・回答保留・問い合わせ登録・ログアウトを確認しました．AIは未接続のため本文抜粋モードです．以下は環境を再作成する場合の手順です．
+公開確認日: 2026-11-06．[公開デモ](https://enterprise-ai-helpdesk.onrender.com)をRenderへデプロイし，HTTPS環境でデモログイン・資料検索・出典の展開・回答保留・問い合わせ登録・ログアウトを確認しました．Gemini APIへの直接接続と出典付き生成回答も確認済みです．以下は環境を再作成する場合の手順です．
 
 ## まず取得するもの
 
@@ -43,7 +43,17 @@ GitHubで空のリポジトリを作成して，表示された接続先を設�
 
 このアプリは `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` でOpenAI互換APIへ接続する．LiteLLM Proxyのローカル再現構成は `compose.ai.yaml` に用意している．
 
-**公開用LiteLLM ProxyはこのRender構成には含めない．** 無料サービスを複数常時起動すると共有無料稼働時間を消費するため，単一の無料Web ServiceにProxyまで収容する案か，別の無料枠ゲートウェイを，キー取得後に実測・検証して選ぶ．それまでは本文抜粋モードの公開であり，原案の「LiteLLM経由でモデル利用」のクラウド実証は未完了．
+現在の公開デモはGoogleのOpenAI互換APIへ直接接続している．2026-11-06，以下の設定で実モデルによる生成回答と出典表示を確認した．APIキーは利用者本人がRenderへ入力し，リポジトリには含めない．
+
+| 環境変数 | 公開デモの設定 |
+|---|---|
+| `LLM_BASE_URL` | `https://generativelanguage.googleapis.com/v1beta/openai` |
+| `LLM_API_KEY` | Render側のみで管理 |
+| `LLM_MODEL` | `gemini-3.1-flash-lite` |
+| `AI_DAILY_LIMIT` | `10` |
+| `SESSION_AI_LIMIT` | `3` |
+
+**公開用LiteLLM ProxyはこのRender構成には含めない．** 無料環境に収容する方法は今後実測して選ぶ．原案の「LiteLLM経由でモデル利用」のクラウド実証は未完了であり，直接接続と区別する．
 
 無料プロバイダーを使う場合も有料枠は有効にせず，無料のモデルと制限を公式画面で確認する．アプリ内上限は補助．プロバイダー上限・障害時は原文抜粋になる．
 

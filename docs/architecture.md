@@ -9,7 +9,7 @@ flowchart LR
   R --> D{根拠は十分か}
   D -->|不足| H[回答保留]
   D -->|あり・キー未設定| E[本文抜粋]
-  D -->|あり・AI有効| L[LiteLLM Proxy互換API]
+  D -->|あり・AI有効| L[OpenAI互換API / 公開先はGemini]
   L --> C[出典ID検証]
   C --> O[出典付き回答]
   H --> T[問い合わせ登録]
@@ -22,7 +22,9 @@ flowchart LR
 
 Next.jsを静的エクスポートし，FastAPIから配信する．同一オリジンでCookieを扱えてCORSの複雑さを避けられ，公開アプリの実行サービスを一つにできる．Next.jsのサーバーAPIは使わず，認証・検索・操作はPython APIが担う．
 
-Sitesのサーバー実行環境はCloudflare Workersであり，このFastAPIアプリをそのまま動かす構成には適さない．Pythonを説明できる成果物という目的を維持し，公開先はRender向けに準備する．
+Sitesのサーバー実行環境はCloudflare Workersであり，このFastAPIアプリをそのまま動かす構成には適さない．Pythonを説明できる成果物という目的を維持し，公開先はRenderを使用する．
+
+公開デモではGeminiのOpenAI互換APIへ直接接続し，追加のゲートウェイを実行しない．LiteLLM Proxy経由の接続はローカル再現用の任意構成として保持し，公開環境での実証とは区別する．
 
 ## 認証・認可
 
