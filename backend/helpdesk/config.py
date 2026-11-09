@@ -16,6 +16,7 @@ class Settings:
     llm_url: str = os.getenv("LLM_BASE_URL", "").rstrip("/")
     llm_key: str = os.getenv("LLM_API_KEY", "")
     llm_model: str = os.getenv("LLM_MODEL", "helpdesk-model")
+    llm_read_timeout: int = max(5, min(60, int(os.getenv("LLM_READ_TIMEOUT_SECONDS", "45"))))
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "")
     ai_daily_limit: int = max(0, int(os.getenv("AI_DAILY_LIMIT", "30")))
     session_ai_limit: int = max(0, int(os.getenv("SESSION_AI_LIMIT", "8")))

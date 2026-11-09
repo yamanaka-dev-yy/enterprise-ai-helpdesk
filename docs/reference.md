@@ -2,7 +2,7 @@
 
 このファイルは `python3 scripts/sync_docs.py` で自動生成します．手動で編集しないでください．
 
-ソース指紋: `68178e763c37d30b`
+ソース指紋: `9404ebbd5269fd87`
 
 ## API一覧
 
@@ -46,6 +46,7 @@
 | `LLM_API_KEY` | 未設定 |
 | `LLM_BASE_URL` | 未設定 |
 | `LLM_MODEL` | `helpdesk-model` |
+| `LLM_READ_TIMEOUT_SECONDS` | `45` |
 | `OUTPUT_USD_PER_MILLION` | 未設定 |
 | `SESSION_AI_LIMIT` | `8` |
 
@@ -102,6 +103,10 @@
 
 | ファイル | テスト関数 |
 |---|---|
+| `backend/tests/test_ai_failures.py` | `test_failures_are_classified_without_leaks_or_retry` |
+| `backend/tests/test_ai_failures.py` | `test_malformed_provider_payload_falls_back` |
+| `backend/tests/test_ai_failures.py` | `test_gateway_separates_timeouts_and_does_not_retry` |
+| `backend/tests/test_ai_failures.py` | `test_embedding_failure_is_identified` |
 | `backend/tests/test_auth.py` | `test_requires_login` |
 | `backend/tests/test_auth.py` | `test_real_login_cookie_and_logout` |
 | `backend/tests/test_auth.py` | `test_persistent_cookie_is_opt_in` |
