@@ -5,6 +5,7 @@ No credentials: quote authorized evidence, never pretend a model generated it.
 """
 import hashlib
 import json
+import logging
 import math
 import re
 import time
@@ -14,7 +15,9 @@ from uuid import uuid4
 
 import httpx
 
-from .db import accessible_documents, connect, consume_limit
+from .db import accessible_documents, audit, connect, consume_limit
+
+logger = logging.getLogger(__name__)
 
 ALIASES = {
     "ヴイピーエヌ": "vpn", "ＶＰＮ": "vpn", "パスワード忘れ": "パスワードを忘れた",
@@ -82,7 +85,8 @@ def lexical_search(question, candidates):
 
 def gateway(settings, route, payload):
     # Only the server's configured gateway is used; visitors cannot choose a URL/model.
-    with httpx.Client(timeout=25, follow_redirects=False, trust_env=False) as client:
+    timeout = httpx.Timeout(connect=5, read=max(5, min(60, settings.llm_read_timeout)), write=10, pool=5)
+    with httpx.Client(timeout=timeout, follow_redirects=False, trust_env=False) as client:
         response = client.post(f"{settings.llm_url}/{route}", json=payload,
                                headers={"Authorization": f"Bearer {settings.llm_key}"})
         response.raise_for_status()
@@ -141,12 +145,16 @@ def answer_question(settings, session, question):
     usage_id = reserve_ai(settings, session)
     if usage_id is None:
         return extract(selected, "AIの利用上限に達したため、関連するマニュアル本文を表示します。", "budget_limit")
+    started = time.perf_counter()
+    stage = "generation"
     try:
         retrieval = "char-bigram-tfidf"
         if settings.embedding_model:
+            stage = "embedding"
             # Embedding costs are separate from completion estimates.
             selected = semantic_search(settings, question, candidates)
             retrieval = "tfidf+embedding-rerank"
+        stage = "generation"
         allowed = {c["id"]: c for c in selected}
         model_input = [{"id": c["id"], "title": c["title"], "section": c["section"], "text": c["text"]} for c in selected]
         data = gateway(settings, "chat/completions", {
@@ -164,9 +172,13 @@ def answer_question(settings, session, question):
                 {"role": "user", "content": json.dumps({"question": question, "untrusted_manuals": model_input}, ensure_ascii=False)},
             ],
         })
+        if not isinstance(data, dict):
+            raise ValueError("Invalid response envelope")
         usage = data.get("usage", {})
         finish_usage(settings, usage_id, "success", usage)
         result = json.loads(data["choices"][0]["message"]["content"])
+        if not isinstance(result, dict):
+            raise ValueError("Invalid answer object")
         ids = result.get("source_ids", [])
         content = result.get("answer", "")
         if (result.get("status") != "answered" or not isinstance(content, str) or not content.strip()
@@ -175,13 +187,45 @@ def answer_question(settings, session, question):
             return hold("AI回答の根拠を確認できませんでした。IT窓口へ問い合わせてください。", "generated", "unverified_citation")
         return {"status": "answered", "answer": content[:5000], "sources": [allowed[i] for i in dict.fromkeys(ids)],
                 "mode": "generated", "reason": "grounded", "retrieval": retrieval}
-    except (httpx.HTTPError, ValueError, KeyError, TypeError, IndexError, OverflowError):
+    except (httpx.HTTPError, ValueError, KeyError, TypeError, IndexError, OverflowError) as error:
+        category = failure_category(error)
         finish_usage(settings, usage_id, "error")
-        return extract(selected, "AIへの接続または回答検証に失敗したため、マニュアル本文を表示します。", "provider_error")
+        elapsed_ms = round((time.perf_counter() - started) * 1000)
+        status = error.response.status_code if isinstance(error, httpx.HTTPStatusError) else None
+        # Never log the exception, URL, payload, headers, model output or question.
+        logger.warning("ai_failure category=%s stage=%s elapsed_ms=%d http_status=%s",
+                       category, stage, elapsed_ms, status)
+        audit(settings.database, f"ai_failure_{stage}_{category}", session)
+        message = ("AIへの接続・応答待ち時間を超えたため、マニュアル本文を表示します。"
+                   if isinstance(error, httpx.TimeoutException)
+                   else "AIへの接続または回答検証に失敗したため、マニュアル本文を表示します。")
+        return {**extract(selected, message, "provider_error"), "failure_code": category}
+
+
+def failure_category(error):
+    """Return only fixed categories; never serialize arbitrary provider data."""
+    if isinstance(error, httpx.ReadTimeout):
+        return "read_timeout"
+    if isinstance(error, httpx.ConnectTimeout):
+        return "connect_timeout"
+    if isinstance(error, httpx.TimeoutException):
+        return "other_timeout"
+    if isinstance(error, httpx.HTTPStatusError):
+        code = error.response.status_code
+        if code in (401, 403):
+            return "authentication"
+        if code == 429:
+            return "rate_limit"
+        return "provider_server" if code >= 500 else "http_status"
+    if isinstance(error, httpx.HTTPError):
+        return "network"
+    return "invalid_response"
 
 
 def finish_usage(settings, usage_id, status, usage=None):
     usage = usage or {}
+    if not isinstance(usage, dict):
+        raise ValueError("Invalid usage object")
     input_tokens = max(0, int(usage.get("prompt_tokens", 0)))
     output_tokens = max(0, int(usage.get("completion_tokens", 0)))
     cost = None

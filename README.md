@@ -95,6 +95,7 @@ npm run build
 - [構成・セキュリティ・データの流れ](docs/architecture.md)
 - [合意した仕様・実装の範囲](docs/specification.md)
 - [ドキュメント自動更新の運用](docs/documentation.md)
+- [生成AIの障害調査と対策](docs/ai-failure-investigation.md)
 - [Issue・PR・マージの運用ルール](docs/development.md)
 
 無料枠で無制限のAI利用や常時稼働を保証するものではありません．公開デモに実際の個人情報・社内機密を入力しないでください．
@@ -112,7 +113,7 @@ npm run build
 | 通常セッションの上限 | 12時間 |
 | ログイン保持の上限 | 30日 |
 | デモセッションの上限 | 2時間 |
-| ソース指紋 | `68178e763c37d30b` |
+| ソース指紋 | `9404ebbd5269fd87` |
 
 API・環境変数・依存関係・テスト関数の一覧は [自動生成リファレンス](docs/reference.md) を参照してください．
 <!-- AUTO-GENERATED:END -->
