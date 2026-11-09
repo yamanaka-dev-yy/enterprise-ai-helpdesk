@@ -96,6 +96,7 @@ npm run build
 - [合意した仕様・実装の範囲](docs/specification.md)
 - [ドキュメント自動更新の運用](docs/documentation.md)
 - [Issue・PR・マージの運用ルール](docs/development.md)
+- [セキュリティルールと問題の報告](SECURITY.md)
 
 無料枠で無制限のAI利用や常時稼働を保証するものではありません．公開デモに実際の個人情報・社内機密を入力しないでください．
 
