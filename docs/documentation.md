@@ -15,9 +15,12 @@ python3 scripts/sync_docs.py --check
 
 - READMEと仕様書の自動生成領域: API件数・依存関係・セッション期限・ソース指紋．
 - `docs/reference.md`: API一覧・アクセス制御・CSRF要否・環境変数の宣言上の既定値・依存関係・テスト関数一覧．
+- `docs/test-data.md`: `backend/helpdesk/seed.py` の架空マニュアル全文と，`docs/evaluation-cases.json` の利用場面・期待する回答要点・参照節・禁止事項．評価ケースの変更もソース指紋の対象です．
 - リポジトリ直下・docs配下・.github配下のMarkdown: 日本語の句読点．
 
 ASTでPythonの宣言を読み取るため，アプリを起動せず，実際の `.env` やAPIキーを読み取りません．生成領域外の文章は句読点以外を自動で書き換えません．
+
+初期資料の本文は `backend/helpdesk/seed.py` を編集します．変更は新規DBの初期化で反映されますが，既存DBの同じIDの資料は自動上書きしません．既存資料を更新する場合は通常管理者の編集機能を使い，保存中のDBを削除して反映する運用にはしません．評価データは `docs/evaluation-cases.json` を編集し，生成後に検索評価を再実行します．回答要点と禁止事項は人が確認する基準であり，文書生成によって確認済みになるものではありません．
 
 ## GitHubでの更新
 

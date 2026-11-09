@@ -1,3 +1,4 @@
+import json
 import shutil
 from pathlib import Path
 
@@ -67,6 +68,42 @@ def test_readme_does_not_name_application_target_companies():
     readme = (Path(__file__).resolve().parents[2] / 'README.md').read_text()
     assert '日本光電' not in readme
     assert 'Nihon Kohden' not in readme
+
+
+def test_data_reference_tracks_seed_and_case_changes(tmp_path):
+    for relative in ('backend/helpdesk/seed.py', 'docs/evaluation-cases.json'):
+        dest = tmp_path / relative
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(sync_docs.ROOT / relative, dest)
+    original = sync_docs.test_data_reference(tmp_path)
+    seed = tmp_path / 'backend/helpdesk/seed.py'
+    seed.write_text(seed.read_text().replace('合計20MB', '合計25MB'))
+    cases_path = tmp_path / 'docs/evaluation-cases.json'
+    cases = json.loads(cases_path.read_text())
+    cases[0]['expected_points'].append('変更追跡の確認用の要点')
+    cases_path.write_text(json.dumps(cases, ensure_ascii=False))
+    updated = sync_docs.test_data_reference(tmp_path)
+    assert original != updated
+    assert '合計25MB' in updated
+    assert '変更追跡の確認用の要点' in updated
+
+
+def test_evaluation_cases_have_valid_evidence_and_review_criteria():
+    from helpdesk.seed import DOCUMENTS
+
+    documents = {doc['id']: doc for doc in DOCUMENTS}
+    cases = json.loads((sync_docs.ROOT / 'docs/evaluation-cases.json').read_text())
+    assert len({case['id'] for case in cases}) == len(cases)
+    for case in cases:
+        assert case['scenario'] and case['expected_points'] and case['forbidden']
+        if case['status'] == 'answered':
+            doc = documents[case['document']]
+            assert doc['role'] == 'employee' or case['role'] == 'admin'
+            assert case['expected_sections']
+            for section in case['expected_sections']:
+                assert f'# {section}\n' in doc['text']
+        else:
+            assert not case.get('document') and not case['expected_sections']
 
 
 def test_sync_includes_contribution_guide_and_pr_template(tmp_path):

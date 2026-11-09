@@ -130,7 +130,8 @@ def source_files(root):
                                       "requirements.lock.txt", "requirements-dev.lock.txt",
                                       "requirements.txt", "requirements-dev.txt",
                                       "pyproject.toml", "Dockerfile", "render.yaml", "compose.yaml",
-                                      "compose.ai.yaml", "infra/litellm.yaml", ".env.example")]
+                                      "compose.ai.yaml", "infra/litellm.yaml", ".env.example",
+                                      "docs/evaluation-cases.json")]
     return sorted({p for p in paths if p.is_file()}, key=lambda p: p.relative_to(root).as_posix())
 
 
@@ -192,6 +193,48 @@ def reference(root):
     return text
 
 
+def test_data_reference(root):
+    """Read only literal seed data and the fixed evaluation cases．"""
+    documents = next(ast.literal_eval(node.value)
+                     for node in tree(root, "backend/helpdesk/seed.py").body
+                     if isinstance(node, ast.Assign)
+                     and any(isinstance(target, ast.Name) and target.id == "DOCUMENTS"
+                             for target in node.targets))
+    cases = json.loads((root / "docs/evaluation-cases.json").read_text())
+    text = "# テストデータ詳細\n\n"
+    text += "このファイルは `python3 scripts/sync_docs.py` で初期資料と評価ケースから自動生成します．手動で編集しないでください．\n\n"
+    text += ("すべて架空のデータです．実在企業の規定や実績ではありません．"
+             "初期資料は `backend/helpdesk/seed.py`，評価入力は `docs/evaluation-cases.json` が正本です．\n\n"
+             "初期資料の変更は新規DBの作成時に反映されます．既存DBでは同じIDの資料を自動上書きしません．"
+             "公開環境への反映はマージ・再デプロイとDBの状態に依存します．\n\n"
+             "## 判定方法\n\n"
+             "自動評価は回答可否と期待する参照文書の有無を確認します．"
+             "以下の回答要点・参照節・禁止事項は人手による確認基準であり，自動合格が本文の正確さを保証するものではありません．"
+             "言い換えケースも同じ基準で判定し，失敗した場合は隠さず記録します．"
+             "実モデルによる検証結果は [評価記録](evaluation.md) で別に管理します．\n\n"
+             f"## 検索対象の架空マニュアル（{len(documents)}件）\n\n"
+             "社員向け資料は社員・管理者が参照できます．管理者向け資料は管理者だけが参照できます．\n\n")
+    for doc in documents:
+        text += f"### {doc['title']}\n\nID: `{doc['id']}` ／ 閲覧範囲: `{doc['role']}`\n\n"
+        for line in doc['text'].splitlines():
+            text += ("#### " + line[2:] + "\n" if line.startswith("# ") else line) + "\n"
+        text += "\n"
+    text += f"## 評価ケース（{len(cases)}件）\n\n"
+    for case in cases:
+        text += f"### {case['id']}：{case['category']}\n\n"
+        text += f"- 質問：{case['question']}\n- 利用者権限：`{case['role']}`\n"
+        text += f"- 利用場面：{case['scenario']}\n"
+        text += f"- 期待する回答可否：`{case['status']}`\n"
+        text += f"- 期待する参照文書：`{case['document']}`\n" if case.get('document') else "- 期待する参照文書：なし．\n"
+        text += "- 確認する参照節：" + (" ／ ".join(case['expected_sections']) or "なし") + "\n"
+        if case.get('challenge'):
+            text += "- 分類：言い換えの課題ケース．合格済みを意味しません．\n"
+        text += "\n期待する回答要点：\n\n" + "".join(f"- {point}\n" for point in case['expected_points'])
+        text += "\n答えてはいけない内容・動作：\n\n" + "".join(f"- {point}\n" for point in case['forbidden'])
+        text += f"\n判定：{case['review_method']}\n\n"
+    return text
+
+
 def replace_section(text, content):
     if text.count(START) != text.count(END) or text.count(START) > 1:
         raise ValueError("自動生成領域のマーカーが不正です．")
@@ -205,7 +248,7 @@ def replace_section(text, content):
 
 def planned_changes(root):
     generated = root / "docs/reference.md"
-    planned = {generated: reference(root)}
+    planned = {generated: reference(root), root / "docs/test-data.md": test_data_reference(root)}
     for relative in ("README.md", "docs/specification.md"):
         path = root / relative
         link = "docs/reference.md" if relative == "README.md" else "reference.md"
